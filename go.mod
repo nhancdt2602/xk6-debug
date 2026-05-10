@@ -6,7 +6,7 @@ toolchain go1.25.9
 
 require (
 	github.com/grafana/sobek v0.0.0-20260429085637-a66d4790012b
-	go.k6.io/k6/v2 v2.0.0
+	go.k6.io/k6/v2 v2.0.0-rc1
 )
 
 require (
@@ -45,7 +45,9 @@ require (
 	github.com/influxdata/influxdb1-client v0.0.0-20190402204710-8ff2fc3824fc // indirect
 	github.com/jhump/protoreflect v1.18.0 // indirect
 	github.com/jhump/protoreflect/v2 v2.0.0-beta.1 // indirect
+	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.18.5 // indirect
+	github.com/mailru/easyjson v0.9.2 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/mstoykov/atlas v0.0.0-20220811071828-388f114305dd // indirect
@@ -97,5 +99,3 @@ require (
 	gopkg.in/validator.v2 v2.0.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace go.k6.io/k6/v2 => ../
