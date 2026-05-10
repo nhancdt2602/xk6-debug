@@ -1,0 +1,21 @@
+# Build output
+k6-debug
+k6-debug.exe
+/cmd/k6debug/k6-debug
+
+# Preprocessed test scripts
+/tmp/
+*.debug.js
+
+# Node
+node_modules/
+npm-debug.log*
+
+# VS Code extension build artifacts
+vscode/k6-debug-extension/*.vsix
+vscode/k6-debug-extension/bin/
+
+# Go
+*.test
+*.out
+coverage.txt

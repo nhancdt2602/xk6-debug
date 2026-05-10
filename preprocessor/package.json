@@ -1,0 +1,14 @@
+{
+  "name": "k6-debug-preprocess",
+  "version": "0.1.0",
+  "description": "Babel preprocessor for k6 debug instrumentation",
+  "bin": {
+    "k6-debug-preprocess": "./bin/k6-debug-preprocess"
+  },
+  "dependencies": {
+    "@babel/generator": "^7",
+    "@babel/parser": "^7",
+    "@babel/traverse": "^7",
+    "@babel/types": "^7"
+  }
+}

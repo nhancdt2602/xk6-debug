@@ -1,0 +1,5 @@
+# Exclude dev/test artifacts from packaged extension
+.vscode/**
+.gitignore
+*.vsix
+node_modules/.cache

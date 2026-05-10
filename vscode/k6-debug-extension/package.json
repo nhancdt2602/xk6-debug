@@ -1,0 +1,107 @@
+{
+  "name": "k6-debug",
+  "displayName": "k6 Debug",
+  "description": "Debug k6 load testing scripts — instrument, run, and attach in one step",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Debuggers"
+  ],
+  "activationEvents": [
+    "onDebugResolve:k6",
+    "onDebugInitialConfigurations:k6"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "k6 Debug",
+      "properties": {
+        "k6debug.binaryPath": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "markdownDescription": "Path to a k6 binary that has the xk6-debug extension built in. Leave empty to use the bundled binary.\n\nSet this in **workspace settings** (`.vscode/settings.json`) to use a project-specific binary — useful when you have a custom k6 build that combines xk6-debug with other extensions:\n\n```json\n{ \"k6debug.binaryPath\": \"./bin/my-custom-k6\" }\n```"
+        }
+      }
+    },
+    "debuggers": [
+      {
+        "type": "k6",
+        "label": "k6 Debug",
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Path to the k6 script to debug (will be instrumented automatically).",
+                "default": "${file}"
+              },
+              "k6Args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Extra arguments passed to k6 run (e.g. [\"--vus\", \"2\"]).",
+                "default": []
+              }
+            }
+          },
+          "attach": {
+            "properties": {
+              "port": {
+                "type": "number",
+                "description": "Port of a running k6 DAP server.",
+                "default": 4711
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "k6",
+            "request": "launch",
+            "name": "Debug k6 Script",
+            "program": "${file}"
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "k6 Debug: Launch",
+            "description": "Instrument and debug a k6 script",
+            "body": {
+              "type": "k6",
+              "request": "launch",
+              "name": "Debug k6 Script",
+              "program": "^\"\\${file}\""
+            }
+          },
+          {
+            "label": "k6 Debug: Attach",
+            "description": "Attach to an already-running k6 DAP server",
+            "body": {
+              "type": "k6",
+              "request": "attach",
+              "name": "Attach to k6 debugger",
+              "port": 4711
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "main": "./extension.js",
+  "dependencies": {
+    "@babel/core": "^7",
+    "@babel/generator": "^7",
+    "@babel/parser": "^7",
+    "@babel/traverse": "^7",
+    "@babel/types": "^7"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.9.1"
+  }
+}

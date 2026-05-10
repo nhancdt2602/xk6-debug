@@ -1,0 +1,132 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # ── Build the k6-debug binary for every target platform ──────────────────────
+  build:
+    name: Build (${{ matrix.vscode_target }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            vscode_target: linux-x64
+          - goos: linux
+            goarch: arm64
+            vscode_target: linux-arm64
+          - goos: darwin
+            goarch: amd64
+            vscode_target: darwin-x64
+          - goos: darwin
+            goarch: arm64
+            vscode_target: darwin-arm64
+          - goos: windows
+            goarch: amd64
+            vscode_target: win32-x64
+            bin_suffix: .exe
+          - goos: windows
+            goarch: arm64
+            vscode_target: win32-arm64
+            bin_suffix: .exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build k6-debug binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: '0'
+        run: |
+          go build -o k6-debug${{ matrix.bin_suffix || '' }} \
+            -ldflags "-s -w -X main.version=${{ github.ref_name }}" \
+            ./cmd/k6debug/
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install extension dependencies
+        working-directory: vscode/k6-debug-extension
+        run: npm ci
+
+      - name: Bundle binary and package vsix
+        working-directory: vscode/k6-debug-extension
+        run: |
+          mkdir -p bin
+          cp ../../k6-debug${{ matrix.bin_suffix || '' }} bin/
+          chmod +x bin/k6-debug${{ matrix.bin_suffix || '' }} || true
+          npx vsce package \
+            --target ${{ matrix.vscode_target }} \
+            --allow-missing-repository \
+            --no-git-tag-version \
+            --no-update-package-json \
+            --no-dependencies
+
+      - name: Upload vsix artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix-${{ matrix.vscode_target }}
+          path: vscode/k6-debug-extension/*.vsix
+          retention-days: 7
+
+  # ── Publish all vsix packages to the VS Code Marketplace ─────────────────────
+  publish:
+    name: Publish to Marketplace
+    needs: build
+    runs-on: ubuntu-latest
+    environment: marketplace   # optional: require manual approval in GitHub
+
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download all vsix artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vsix-*
+          merge-multiple: true
+          path: vsix/
+
+      - name: Publish each platform package
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          npm install -g @vscode/vsce
+          for vsix in vsix/*.vsix; do
+            echo "Publishing $vsix..."
+            vsce publish --packagePath "$vsix" --pat "$VSCE_PAT"
+          done
+
+  # ── Attach binaries + vsix files to the GitHub Release ───────────────────────
+  release:
+    name: GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all vsix artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vsix-*
+          merge-multiple: true
+          path: release/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.vsix
+          generate_release_notes: true

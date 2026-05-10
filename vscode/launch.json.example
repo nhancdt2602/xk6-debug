@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to k6 debugger",
+      "type": "k6",
+      "request": "attach",
+      "debugServer": 4711
+    }
+  ]
+}
