@@ -2,7 +2,7 @@
   "name": "k6-debug",
   "displayName": "k6 Debug",
   "description": "Debug k6 load testing scripts — instrument, run, and attach in one step",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "nhancdt2602",
   "repository": {
     "type": "git",
