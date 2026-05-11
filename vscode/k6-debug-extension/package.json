@@ -3,6 +3,12 @@
   "displayName": "k6 Debug",
   "description": "Debug k6 load testing scripts — instrument, run, and attach in one step",
   "version": "0.1.0",
+  "publisher": "nhancdt2602",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nhancdt2602/xk6-debug"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.70.0"
   },

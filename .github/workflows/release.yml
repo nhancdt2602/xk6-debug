@@ -68,10 +68,8 @@ jobs:
           chmod +x bin/k6-debug${{ matrix.bin_suffix || '' }} || true
           npx vsce package \
             --target ${{ matrix.vscode_target }} \
-            --allow-missing-repository \
             --no-git-tag-version \
-            --no-update-package-json \
-            --no-dependencies
+            --no-update-package-json
 
       - name: Upload vsix artifact
         uses: actions/upload-artifact@v4
