@@ -6,7 +6,6 @@ on:
       - 'v*'
 
 jobs:
-  # ── Build the k6-debug binary for every target platform ──────────────────────
   build:
     name: Build (${{ matrix.vscode_target }})
     runs-on: ubuntu-latest
@@ -48,7 +47,8 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: '0'
         run: |
-          go build -o k6-debug${{ matrix.bin_suffix || '' }} \
+          go build \
+            -o k6-debug${{ matrix.bin_suffix || '' }} \
             -ldflags "-s -w -X main.version=${{ github.ref_name }}" \
             ./cmd/k6debug/
 
@@ -65,49 +65,19 @@ jobs:
         run: |
           mkdir -p bin
           cp ../../k6-debug${{ matrix.bin_suffix || '' }} bin/
+          cp ../../LICENSE .
           chmod +x bin/k6-debug${{ matrix.bin_suffix || '' }} || true
           npx vsce package \
             --target ${{ matrix.vscode_target }} \
             --no-git-tag-version \
             --no-update-package-json
 
-      - name: Upload vsix artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: vsix-${{ matrix.vscode_target }}
           path: vscode/k6-debug-extension/*.vsix
-          retention-days: 7
+          retention-days: 1
 
-  # ── Publish all vsix packages to the VS Code Marketplace ─────────────────────
-  publish:
-    name: Publish to Marketplace
-    needs: build
-    runs-on: ubuntu-latest
-    environment: marketplace   # optional: require manual approval in GitHub
-
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Download all vsix artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: vsix-*
-          merge-multiple: true
-          path: vsix/
-
-      - name: Publish each platform package
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: |
-          npm install -g @vscode/vsce
-          for vsix in vsix/*.vsix; do
-            echo "Publishing $vsix..."
-            vsce publish --packagePath "$vsix" --pat "$VSCE_PAT"
-          done
-
-  # ── Attach binaries + vsix files to the GitHub Release ───────────────────────
   release:
     name: GitHub Release
     needs: build
@@ -116,15 +86,15 @@ jobs:
       contents: write
 
     steps:
-      - name: Download all vsix artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           pattern: vsix-*
           merge-multiple: true
-          path: release/
+          path: dist/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*.vsix
+          files: dist/*.vsix
           generate_release_notes: true
+          fail_on_unmatched_files: true
