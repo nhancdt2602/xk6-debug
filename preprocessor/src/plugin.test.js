@@ -34,8 +34,13 @@ function assert(condition, msg) {
   const code = `import http from 'k6/http';`;
   const result = transform(code);
   assert(
-    result.includes(`import { capture, breakpoint } from "k6/x/debug";`),
+    result.includes(`from "k6/x/debug"`),
     'should inject debug import'
+  );
+  assert(
+    result.includes('line') && result.includes('capture') &&
+    result.includes('breakpoint') && result.includes('enterScope'),
+    'should import line, capture, breakpoint, enterScope'
   );
   assert(
     result.includes(`import http from 'k6/http';`),
@@ -46,7 +51,7 @@ function assert(condition, msg) {
 
 // Test 2: No duplicate import
 (function testNoDuplicateImport() {
-  const code = `import { capture, breakpoint } from 'k6/x/debug';
+  const code = `import { line, capture, breakpoint, enterScope } from 'k6/x/debug';
 import http from 'k6/http';`;
   const result = transform(code);
   const matches = result.match(/from ["']k6\/x\/debug["']/g);
@@ -109,19 +114,12 @@ export default function() {
   const result = transform(code, 'script.js');
 
   assert(result.includes('from "k6/x/debug"'), 'should have debug import');
-  assert(
-    result.includes('name: "resp"'),
-    'should capture resp'
-  );
-  assert(
-    result.includes('name: "body"'),
-    'should capture body'
-  );
+  assert(result.includes('enterScope('), 'should inject enterScope at function entry');
+  assert(result.includes('line('), 'should inject line() markers');
+  assert(result.includes('name: "resp"'), 'should capture resp');
+  assert(result.includes('name: "body"'), 'should capture body');
   assert(result.includes('breakpoint('), 'should have breakpoint');
-  assert(
-    result.includes('file: "script.js"'),
-    'should include filename'
-  );
+  assert(result.includes('file: "script.js"'), 'should include filename');
   console.log('PASS: full script transformation');
 })();
 
