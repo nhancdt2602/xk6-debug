@@ -105,7 +105,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 			return
 		}
 
-		log.Printf("[k6-debug] DAP recv: type=%s command=%s seq=%d", msg.Type, msg.Command, msg.Seq)
+		log.Printf("[k6-debug] DAP recv: type=%s command=%s seq=%d args=%s", msg.Type, msg.Command, msg.Seq, msg.Arguments)
 
 		response := s.handler.HandleMessage(msg)
 		if response != nil {

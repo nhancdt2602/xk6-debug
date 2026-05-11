@@ -1,8 +1,8 @@
 {
   "name": "k6-debugger",
   "displayName": "k6 Debugger",
-  "description": "Debug k6 load testing scripts — instrument, run, and attach in one step",
-  "version": "0.1.1",
+  "description": "Debug k6 load testing scripts \u2014 instrument, run, and attach in one step",
+  "version": "0.1.2",
   "publisher": "nhancdt2602",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
           "type": "string",
           "default": "",
           "scope": "resource",
-          "markdownDescription": "Path to a k6 binary that has the xk6-debug extension built in. Leave empty to use the bundled binary.\n\nSet this in **workspace settings** (`.vscode/settings.json`) to use a project-specific binary — useful when you have a custom k6 build that combines xk6-debug with other extensions:\n\n```json\n{ \"k6debugger.binaryPath\": \"./bin/my-custom-k6\" }\n```"
+          "markdownDescription": "Path to a k6 binary that has the xk6-debug extension built in. Leave empty to use the bundled binary.\n\nSet this in **workspace settings** (`.vscode/settings.json`) to use a project-specific binary \u2014 useful when you have a custom k6 build that combines xk6-debug with other extensions:\n\n```json\n{ \"k6debugger.binaryPath\": \"./bin/my-custom-k6\" }\n```"
         }
       }
     },

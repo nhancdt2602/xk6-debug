@@ -91,6 +91,15 @@ module.exports = function ({ types: t }) {
     visitor: {
       Program: {
         enter(path, state) {
+          // Reset per-file mutable state. Babel caches plugin instances across
+          // transformSync calls (same function ref → same closure), so without
+          // this reset the second launch skips all line() insertion because
+          // lineInstrumented already contains every source line from run #1.
+          nextScopeId = 1;
+          scopeStack.length = 0;
+          scopeStack.push(0);
+          lineInstrumented.clear();
+
           const filename =
             state.filename || state.file.opts.filename || 'unknown';
 
