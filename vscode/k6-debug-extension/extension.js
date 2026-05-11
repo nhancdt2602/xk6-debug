@@ -16,7 +16,7 @@ let outputChannel;
 
 function getOutputChannel() {
   if (!outputChannel) {
-    outputChannel = vscode.window.createOutputChannel('k6 Debug');
+    outputChannel = vscode.window.createOutputChannel('k6 Debugger');
   }
   return outputChannel;
 }
@@ -94,7 +94,7 @@ function writeInstrumentedFile(inputPath, code) {
 // Priority: user setting → bundled binary → workspace root → PATH.
 function resolveBinaryPath(folder) {
   // 1. Explicit user setting
-  const setting = vscode.workspace.getConfiguration('k6debug').get('binaryPath');
+  const setting = vscode.workspace.getConfiguration('k6debugger').get('binaryPath');
   if (setting) return setting;
 
   // 2. Bundled binary — present when installed from the Marketplace or a platform vsix.
@@ -144,7 +144,7 @@ function pipeK6Output(proc, port) {
     ch.appendLine(`[k6-debug spawn error] ${err.message}`);
     if (err.code === 'ENOENT') {
       vscode.window.showErrorMessage(
-        `k6-debug: binary not found. Set k6debug.binaryPath in settings.`
+        `k6-debug: binary not found. Set k6debugger.binaryPath in settings.`
       );
     }
   });
@@ -228,7 +228,7 @@ class K6DebugConfigProvider {
       proc.kill();
       runningProcesses.delete(port);
       vscode.window.showErrorMessage(
-        `k6 debug: ${err.message}. Check the "k6 Debug" output channel for details.`
+        `k6 debug: ${err.message}. Check the "k6 Debugger" output channel for details.`
       );
       return undefined;
     }
