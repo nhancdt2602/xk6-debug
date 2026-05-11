@@ -98,3 +98,29 @@ jobs:
           files: dist/*.vsix
           generate_release_notes: true
           fail_on_unmatched_files: true
+
+  publish:
+    name: Publish to VS Code Marketplace
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: vsix-*
+          merge-multiple: true
+          path: dist/
+
+      - name: Publish all platform packages
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          npm install -g @vscode/vsce
+          for vsix in dist/*.vsix; do
+            echo "Publishing $vsix..."
+            vsce publish --packagePath "$vsix" --pat "$VSCE_PAT"
+          done
